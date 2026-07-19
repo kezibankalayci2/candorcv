@@ -56,7 +56,12 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _send_static(self, path: str) -> bool:
-        relative_path = "index.html" if path == "/" else path.lstrip("/")
+        if path == "/":
+            relative_path = "index.html"
+        elif path == "/favicon.ico":
+            relative_path = "assets/candorcv-logo-512.png"
+        else:
+            relative_path = path.lstrip("/")
         candidate = (STATIC_ROOT / relative_path).resolve()
         try:
             candidate.relative_to(STATIC_ROOT.resolve())

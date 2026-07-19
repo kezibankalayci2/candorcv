@@ -2,6 +2,8 @@
 
 **Every claim, grounded.**
 
+Canlı uygulama: [candorcv.vercel.app](https://candorcv.vercel.app)
+
 CandorCV; İngilizce CV ile İngilizce iş ilanını karşılaştıran, açıklanabilir bir tahmini uyum analizi sunan ve yalnızca açık kullanıcı onayıyla kaynak CV'ye bağlı ATS dostu çıktı oluşturan web uygulamasıdır.
 
 ## Hızlı başlangıç
