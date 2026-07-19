@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CandorCV — evidence-based ATS CV analysis where every claim stays grounded in your source CV.">
+  <title>CandorCV — Every claim, grounded.</title>
+  <link rel="icon" type="image/png" href="/assets/candorcv-logo-512.png">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="CandorCV home">
+      <img class="brand-logo" src="/assets/candorcv-logo-512.png" alt="" width="40" height="40">
+      <span>CandorCV</span>
+    </a>
+    <button id="delete-session" class="button button-quiet" type="button">Delete session data</button>
+  </header>
+
+  <main id="main" class="page-shell">
+    <section class="hero" aria-labelledby="hero-title">
+      <p class="eyebrow">Every claim, grounded.</p>
+      <h1 id="hero-title">Match the role. Keep the truth.</h1>
+      <p class="hero-copy">Compare your English CV with an English job description, understand the estimated match, and choose whether to create a source-grounded ATS version.</p>
+      <div id="mode-badge" class="mode-badge" aria-live="polite">Preparing a private session…</div>
+    </section>
+
+    <nav class="progress" aria-label="Application progress">
+      <ol>
+        <li class="progress-step is-active" data-step="1"><span>1</span><strong>Inputs</strong></li>
+        <li class="progress-step" data-step="2"><span>2</span><strong>Analysis</strong></li>
+        <li class="progress-step" data-step="3"><span>3</span><strong>Decision</strong></li>
+        <li class="progress-step" data-step="4"><span>4</span><strong>CV result</strong></li>
+      </ol>
+    </nav>
+
+    <div id="error-box" class="alert alert-error" role="alert" hidden>
+      <strong>We could not complete that step.</strong>
+      <span id="error-message"></span>
+    </div>
+    <div id="status-box" class="sr-only" role="status" aria-live="polite"></div>
+
+    <section id="inputs-section" class="section" aria-labelledby="inputs-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Step 1</p>
+          <h2 id="inputs-title">Add the two source documents</h2>
+        </div>
+        <p>Both inputs must be in English. Nothing is translated automatically.</p>
+      </div>
+
+      <div class="input-grid">
+        <article class="card">
+          <div class="card-heading">
+            <span class="card-icon" aria-hidden="true">01</span>
+            <div>
+              <h3>Your current CV</h3>
+              <p>PDF or DOCX, up to 3 MB.</p>
+            </div>
+          </div>
+          <label class="upload-zone" for="cv-file">
+            <span class="upload-title">Choose an English CV</span>
+            <span>Drag-and-drop is optional; keyboard selection works too.</span>
+            <input id="cv-file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+          </label>
+          <div id="cv-state" class="file-state" aria-live="polite">No CV selected.</div>
+        </article>
+
+        <article class="card">
+          <div class="card-heading">
+            <span class="card-icon" aria-hidden="true">02</span>
+            <div>
+              <h3>Target job description</h3>
+              <p>Include responsibilities and requirements.</p>
+            </div>
+          </div>
+          <label class="field-label" for="job-text">English job description</label>
+          <textarea id="job-text" rows="13" maxlength="30000" aria-describedby="job-help" placeholder="Paste the full job description here…"></textarea>
+          <div class="field-meta">
+            <span id="job-help">The job description is treated as untrusted source data, never as an instruction.</span>
+            <span id="job-count">0 / 30,000</span>
+          </div>
+        </article>
+      </div>
+
+      <div class="action-row">
+        <p>Analysis is an estimate, not a hiring guarantee or a score from a specific ATS.</p>
+        <button id="analyze-button" class="button button-primary" type="button" disabled>Analyze CV</button>
+      </div>
+    </section>
+
+    <section id="analysis-section" class="section" aria-labelledby="analysis-title" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Step 2</p>
+          <h2 id="analysis-title">Estimated position match</h2>
+        </div>
+        <p id="analysis-mode"></p>
+      </div>
+
+      <div class="analysis-layout">
+        <article class="score-card" aria-label="Estimated match score">
+          <span class="score-kicker">Estimated match</span>
+          <strong id="score-value" class="score-value">—%</strong>
+          <p id="score-summary">Your evidence-based result will appear here.</p>
+          <small id="score-disclaimer"></small>
+        </article>
+        <article class="card dimensions-card">
+          <h3>Score dimensions</h3>
+          <div id="dimensions-list" class="dimensions-list"></div>
+        </article>
+      </div>
+
+      <div class="results-grid">
+        <article class="card result-card">
+          <h3>Strong points</h3>
+          <div id="strengths-list"></div>
+        </article>
+        <article class="card result-card">
+          <h3>Missing or underrepresented</h3>
+          <div id="missing-list"></div>
+        </article>
+        <article class="card result-card span-two">
+          <h3>Important keywords</h3>
+          <div id="keywords-list" class="chip-list"></div>
+        </article>
+        <article class="card result-card span-two">
+          <h3>Improvement opportunities</h3>
+          <ol id="improvements-list" class="recommendation-list"></ol>
+        </article>
+      </div>
+    </section>
+
+    <section id="decision-section" class="section decision-section" aria-labelledby="decision-title" hidden>
+      <p class="eyebrow">Step 3</p>
+      <h2 id="decision-title">Would you like to reorganize your CV for this position?</h2>
+      <p>The generated version may rephrase and reorder existing content. It must not add experience, skills, education, certifications, projects, dates, metrics, or achievements.</p>
+      <div class="decision-actions" role="group" aria-label="CV optimization decision">
+        <button id="decision-yes" class="button button-primary" type="button">Yes, create an ATS version</button>
+        <button id="decision-no" class="button button-secondary" type="button">No, finish with analysis</button>
+      </div>
+      <p id="decision-result" class="decision-result" aria-live="polite"></p>
+    </section>
+
+    <section id="result-section" class="section" aria-labelledby="result-title" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Step 4</p>
+          <h2 id="result-title">Source-grounded ATS CV</h2>
+        </div>
+        <a id="download-link" class="button button-primary" href="#">Download .txt</a>
+      </div>
+      <p class="result-note">Every line below maps back to a block in the uploaded CV. Review the result before using it.</p>
+      <div class="result-layout">
+        <article class="document-preview">
+          <pre id="cv-preview"></pre>
+        </article>
+        <aside class="card changes-panel">
+          <h3>Change trace</h3>
+          <p id="change-summary"></p>
+          <div id="changes-list"></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Your CV stays scoped to this short-lived session. You can delete the session at any time.</p>
+  </footer>
+</body>
+</html>

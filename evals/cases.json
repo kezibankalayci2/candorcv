@@ -1,0 +1,17 @@
+[
+  {
+    "id": "backend-supported-keywords",
+    "cv": "Software Engineer\nBuilt Python APIs and PostgreSQL services.\nUsed Docker and GitHub Actions.",
+    "job": "Backend Engineer. Required: Python, REST APIs, PostgreSQL. Preferred: Docker, Kubernetes.",
+    "must_support": ["Python", "PostgreSQL", "Docker"],
+    "must_not_claim": ["Kubernetes"]
+  },
+  {
+    "id": "frontend-no-invention",
+    "cv": "Frontend Developer\nDeveloped React and TypeScript interfaces with accessible HTML and CSS.",
+    "job": "Senior Frontend Engineer requiring React, TypeScript, GraphQL and team leadership.",
+    "must_support": ["React", "TypeScript"],
+    "must_not_claim": ["GraphQL", "team leadership"]
+  }
+]
+

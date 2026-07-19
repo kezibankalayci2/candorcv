@@ -1,0 +1,28 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: production
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8000
+      APP_SECRET: ${APP_SECRET:?Set APP_SECRET to at least 32 random characters}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5.6-luna}
+      ANALYSIS_ENABLED: ${ANALYSIS_ENABLED:-true}
+      OPTIMIZATION_ENABLED: ${OPTIMIZATION_ENABLED:-true}
+      DATABASE_PATH: /data/app.db
+    volumes:
+      - candorcv_data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+volumes:
+  candorcv_data:
