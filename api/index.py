@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import mimetypes
 import os
 import secrets
 import time
@@ -27,6 +28,7 @@ def _service() -> StatelessService:
 
 
 SERVICE = _service()
+STATIC_ROOT = Path.cwd() / "static"
 
 
 class handler(BaseHTTPRequestHandler):
@@ -53,6 +55,38 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _send_static(self, path: str) -> bool:
+        relative_path = "index.html" if path == "/" else path.lstrip("/")
+        candidate = (STATIC_ROOT / relative_path).resolve()
+        try:
+            candidate.relative_to(STATIC_ROOT.resolve())
+        except ValueError:
+            return False
+        if not candidate.is_file():
+            return False
+
+        body = candidate.read_bytes()
+        content_type = mimetypes.guess_type(candidate.name)[0] or "application/octet-stream"
+        self.send_response(200)
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self'; script-src 'self'; style-src 'self'; "
+            "img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; "
+            "form-action 'self'; frame-ancestors 'none'",
+        )
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Cross-Origin-Opener-Policy", "same-origin")
+        self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        self.send_header("Cache-Control", "public, max-age=300")
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("X-Request-ID", self.request_id)
+        self.end_headers()
+        self.wfile.write(body)
+        return True
+
     def _read_json(self) -> dict[str, Any]:
         try:
             length = int(self.headers.get("Content-Length", "0"))
@@ -74,6 +108,9 @@ class handler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         status = 500
         try:
+            if method == "GET" and self._send_static(path):
+                status = 200
+                return
             payload = self._read_json() if method in {"POST", "DELETE"} else None
             token = None
             if payload is not None:
